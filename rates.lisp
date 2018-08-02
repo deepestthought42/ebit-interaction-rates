@@ -36,20 +36,13 @@
 	 (q (min z (max 0 (+ (q origin)
 			     (nubase:change-in-q decay)
 			     (- z (z origin))))))
-	 (destination (remove-if-not #'(lambda (index)
-					 (and (= (a index) a)
-					      (= (z index) z)
-					      (= (q index) q)))
-				     all-indices)))
-    (cond
-      ((not destination)
-       (error "Couldn't find destination for: ~a" decay))
-      (t (make-instance 'rate-of-change
-			:fractional-rate-in-1/s (nubase:t1/2-to-decay-rates
-						 (nubase:half-life decay))
-			:description (nubase:name decay)
-			:origin origin
-			:destination (first destination))))))
+	 (destination (find-index a z q all-indices)))
+    (make-instance 'rate-of-change
+		   :fractional-rate-in-1/s (nubase:t1/2-to-decay-rates
+					    (nubase:half-life decay))
+		   :description (nubase:name decay)
+		   :origin origin
+		   :destination destination)))
 
 
 (defun get-nuclear-decay-rates (origin decays all-indices)
@@ -63,16 +56,61 @@
 
 
 
-(defun get-decay-rates-for-nuclides (nuclides maximum-lifetime)
-  (let+ (((&slots nubase:decays nubase:nuclides)
+
+(defun get-rr-rates (indices sigma-to-rate-factor electron-beam-energy-in-ev)
+  (iter
+    (for index in indices)
+    (if (<= (q index) 0)
+	(next-iteration))
+    (collect
+	(make-instance 'rate-of-change
+		       :description "Radiative recombination"
+		       :origin index
+		       :destination (find-index (a index)
+						(z index)
+						(1- (q index))
+						indices)
+		       :fractional-rate-in-1/s
+		       (* sigma-to-rate-factor
+			  (cross:rr-cross-section electron-beam-energy-in-ev
+						  (q index) (Z index)))))))
+
+(defun get-ei-rates (indices sigma-to-rate-factor electron-beam-energy-in-ev)
+  (iter
+    (for index in indices)
+    (if (>= (q index) (z index))
+	(next-iteration))
+    (collect
+	(make-instance 'rate-of-change
+		       :description "Electron impact"
+		       :origin index
+		       :destination (find-index (a index)
+						(z index)
+						(1+ (q index))
+						indices)
+		       :fractional-rate-in-1/s
+		       (* sigma-to-rate-factor
+			  (cross:rr-cross-section electron-beam-energy-in-ev
+						  (q index) (Z index)))))))
+
+
+(defun get-decay-rates-for-nuclides (nuclides maximum-lifetime
+				     velocity-electrons-cm/s electron-rate
+				     electron-beam-energy-in-ev)
+  (let+ (;(ve-in-c (/ velocity-electrons-cm/s *c-in-cm/s*))
+	 (sigma-to-rate-factor (* velocity-electrons-cm/s electron-rate))
+	 ((&slots nubase:decays nubase:nuclides)
 	  (create-decays-for-nuclides nuclides maximum-lifetime))
 	 (indices (get-indices-for-all-nuclides nubase:nuclides))
-	 (n (length indices))
-	 (nuclear-decays (alexandria:mappend
+	 ;(n (length indices))
+	 (nuclear-decay-rates (alexandria:mappend
 			  #'(lambda (index)
 			      (get-nuclear-decay-rates index nubase:decays indices))
-			  indices)))
-    nuclear-decays))
+			  indices))
+	 (rr-rates (get-rr-rates indices sigma-to-rate-factor electron-beam-energy-in-ev))
+	 (ei-rates (get-ei-rates indices sigma-to-rate-factor electron-beam-energy-in-ev)))
+    (sort (append nuclear-decay-rates rr-rates ei-rates)
+	  #'< :key #'(lambda (r) (i (destination r))))))
 
 
 

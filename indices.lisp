@@ -17,6 +17,16 @@
   (let+ (((&slots i A Z q) index))
     (format stream "i:~D,A:~D,Z:~D,q:~D" i A Z q)))
 
+(defun find-index (A Z q all-indices)
+  (let ((index (remove-if-not #'(lambda (index)
+				  (and (= (a index) a)
+				       (= (z index) z)
+				       (= (q index) q)))
+			      all-indices)))
+    (if (not index)
+	(error "Couldn't find idestination for a: ~D, z: ~D, q: ~D" a z q)
+	(first index))))
+
 
 (defmethod print-object ((o index) stream)
   (print-unreadable-object (o stream)
