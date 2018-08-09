@@ -117,8 +117,8 @@
 
 
 
-
-
-
+#+nil
+(get-decay-rates-for-nuclides (list (nubase:get-entry-for 20 8)) nubase:*stable*
+			      1d0 1d0 1d0)
 
 

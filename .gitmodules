@@ -1,0 +1,3 @@
+[submodule "message-protocol"]
+	path = message-protocol
+	url = ./message-protocol/

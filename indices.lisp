@@ -32,8 +32,6 @@
   (print-unreadable-object (o stream)
     (print-index o stream)))
 
-(print-object )
-
 
 (defun get-no-ion-species (nuclides)
   (iter

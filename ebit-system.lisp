@@ -93,6 +93,15 @@ on the overlap. Adjust ACCEPT-TRAP-DEPTH-IN-MULTIPLE-OF-V-0: ~,2f if necessary."
 
 
 
+(defmethod get-decay-rates ((system ebit-system) &key)
+  (let+ (((&slots nuclides decay-maximum-lifetime
+		  velocity-electrons-cm/s electron-rate
+		  electron-beam-energy-in-ev)
+	  system))
+    (get-decay-rates-for-nuclides nuclides decay-maximum-lifetime
+				  velocity-electrons-cm/s electron-rate
+				  electron-beam-energy-in-ev)))
+
 
 
 

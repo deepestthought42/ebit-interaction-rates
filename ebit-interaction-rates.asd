@@ -4,17 +4,20 @@
   :description "Describe ebit-interaction-rates here"
   :author "Your Name <your.name@example.com>"
   :license "Specify license here"
+  :defsystem-depends-on  (#:cl-protobufs)
   :depends-on (#:iterate
-               #:alexandria
-               #:let-plus
-               #:ionization-energies
-               #:nubase
-               #:ebit-cross-sections)
+		#:alexandria
+		#:let-plus
+		#:ionization-energies
+		#:nubase
+		#:ebit-cross-sections
+		#:cl-protobufs
+		#:group-by)
   :serial t
   :components ((:file "package")
 	       (:file "constants")
-	       (:file "ebit-system")
 	       (:file "indices")
 	       (:file "rates")
+	       (:file "ebit-system")
                (:file "ebit-interaction-rates")))
 
