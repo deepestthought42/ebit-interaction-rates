@@ -2,17 +2,6 @@
 
 
 
-(defclass index ()
-  ((i :initarg :i :accessor i 
-      :initform (error "Must initialize i."))
-   (A :initarg :A :accessor A 
-      :initform (error "Must initialize A."))
-   (Z :initarg :Z :accessor Z 
-      :initform (error "Must initialize Z."))
-   (q :initarg :q :accessor q 
-      :initform (error "Must initialize q."))))
-
-
 (defun print-index (index stream)
   (let+ (((&slots i A Z q) index))
     (format stream "i:~D,A:~D,Z:~D,q:~D" i A Z q)))

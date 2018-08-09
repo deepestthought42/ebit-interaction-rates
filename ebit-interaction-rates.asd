@@ -14,7 +14,8 @@
 		#:cl-protobufs
 		#:group-by)
   :serial t
-  :components ((:file "package")
+  :components ((:protobuf-file "message-protocol/interaction-rate")
+	       (:file "package")
 	       (:file "constants")
 	       (:file "indices")
 	       (:file "rates")

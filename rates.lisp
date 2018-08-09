@@ -2,20 +2,10 @@
 
 
 
-(defclass rate-of-change ()
-  ((fractional-rate-in-1/s :initarg :fractional-rate-in-1/s :accessor fractional-rate-in-1/s 
-			   :initform (error "Must initialize fractional-rate-in-1/s."))
-   (description :initarg :description :accessor description 
-		:initform (error "Must initialize description."))
-   (origin :initarg :origin :accessor origin 
-	   :initform (error "Must initialize origin."))
-   (destination :initarg :destination :accessor destination 
-		:initform (error "Must initialize destination."))))
-
-(defmethod print-object ((o rate-of-change) stream)
+(defmethod print-object ((o interactionrates:rate) stream)
   (print-unreadable-object (o stream)
     (format stream "R_{~a} = ~f/s [~a -> ~a]"
-	    (description o) (fractional-rate-in-1/s o)
+	    (description o) (rate-in-hz o)
 	    (print-index (origin o) nil)
 	    (print-index (destination o) nil))))
 
@@ -37,8 +27,8 @@
 			     (nubase:change-in-q decay)
 			     (- z (z origin))))))
 	 (destination (find-index a z q all-indices)))
-    (make-instance 'rate-of-change
-		   :fractional-rate-in-1/s (nubase:t1/2-to-decay-rates
+    (make-instance 'interactionrates:rate
+		   :rate-in-hz (nubase:t1/2-to-decay-rates
 					    (nubase:half-life decay))
 		   :description (nubase:name decay)
 		   :origin origin
@@ -63,14 +53,14 @@
     (if (<= (q index) 0)
 	(next-iteration))
     (collect
-	(make-instance 'rate-of-change
+	(make-instance 'interactionrates:rate
 		       :description "Radiative recombination"
 		       :origin index
 		       :destination (find-index (a index)
 						(z index)
 						(1- (q index))
 						indices)
-		       :fractional-rate-in-1/s
+		       :rate-in-hz
 		       (* sigma-to-rate-factor
 			  (cross:rr-cross-section electron-beam-energy-in-ev
 						  (q index) (Z index)))))))
@@ -81,14 +71,14 @@
     (if (>= (q index) (z index))
 	(next-iteration))
     (collect
-	(make-instance 'rate-of-change
+	(make-instance 'interactionrates:rate
 		       :description "Electron impact"
 		       :origin index
 		       :destination (find-index (a index)
 						(z index)
 						(1+ (q index))
 						indices)
-		       :fractional-rate-in-1/s
+		       :rate-in-hz
 		       (* sigma-to-rate-factor
 			  (cross:rr-cross-section electron-beam-energy-in-ev
 						  (q index) (Z index)))))))
