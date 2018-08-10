@@ -9,13 +9,14 @@
   (let+ (((&slots nuclides decay-maximum-lifetime
 		  velocity-electrons-cm/s electron-rate
 		  electron-beam-energy-in-ev)
-	  system))
-    (make-instance 'rate-list
-		   :rates
-		   (get-decay-rates-for-nuclides nuclides decay-maximum-lifetime
+	  system)
+	 (rates (get-decay-rates-for-nuclides nuclides decay-maximum-lifetime
 						 velocity-electrons-cm/s electron-rate
-						 electron-beam-energy-in-ev))))
-
+						 electron-beam-energy-in-ev))
+	 (dimension (length (remove-duplicates rates :key #'(lambda (r) (i (destination r)))))))
+    (make-instance 'rate-list
+		   :rates rates
+		   :dimension dimension)))
 
 
 (defmethod write-decay-rates-to-file ((system ebit-system) filename &key (if-exists :error))
@@ -25,3 +26,5 @@
 			    :if-exists if-exists
 			    :element-type '(unsigned-byte 8))
       (proto:serialize-object-to-stream rate-list 'rate-list :stream stream ))))
+
+
