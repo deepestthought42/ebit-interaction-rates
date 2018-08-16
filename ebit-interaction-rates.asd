@@ -1,9 +1,9 @@
 ;;;; ebit-interaction-rates.asd
 
 (asdf:defsystem #:ebit-interaction-rates
-  :description "Describe ebit-interaction-rates here"
-  :author "Your Name <your.name@example.com>"
-  :license "Specify license here"
+  :description "Calculate interaction rates for EBIT ODEs."
+  :author "Renee Klawitter <klawitterrenee@gmail.com>"
+  :license  "Apache 2.0"
   :defsystem-depends-on  (#:cl-protobufs)
   :depends-on (#:iterate
 		#:alexandria
@@ -14,7 +14,7 @@
 		#:cl-protobufs
 		#:group-by)
   :serial t
-  :components ((:protobuf-file "ebit-interaction-rates-msgs/interaction-rate")
+  :components ((:protobuf-file "ebit-ode-msg/ebit-ode-messages")
 	       (:file "package")
 	       (:file "constants")
 	       (:file "indices")

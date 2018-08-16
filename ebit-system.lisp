@@ -4,6 +4,7 @@
 (defclass ebit-system ()
   ((nuclides :initarg :nuclides :accessor nuclides 
 	     :initform (error "Must initialize nuclides."))
+   (indices :reader indices :initform '())
    (initial-populations :accessor initial-populations
 			:initarg :initial-populations :initform '())
    (source-terms :accessor source-terms :initarg :source-terms :initform '())
@@ -68,7 +69,7 @@
 
 (defmethod initialize-instance :after ((sys ebit-system) &key)
   (let+ (((&slots current-density-in-A/cm^2 beam-radius-in-um
-		  nuclides
+		  nuclides indices
 		  electron-beam-energy-in-ev beam-current-in-a
 		  velocity-electrons-cm/s electron-rate
 		  accept-trap-depth-in-multiple-of-v-0
@@ -78,6 +79,7 @@
 	 (beam-radius-in-cm (* 1d-4 beam-radius-in-um))
 	 (decays (create-decays-for-system sys)))
     (setf nuclides (nubase:nuclides decays)
+	  indices (get-indices-for-all-nuclides nuclides)
 	  current-density-in-a/cm^2 (/ beam-current-in-a (* pi beam-radius-in-cm beam-radius-in-cm))
 	  velocity-electrons-cm/s (electron-velocity electron-beam-energy-in-ev)
 	  electron-rate (/ current-density-in-a/cm^2 *e-chg-in-C* velocity-electrons-cm/s)

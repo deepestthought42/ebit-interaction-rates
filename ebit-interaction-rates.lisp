@@ -8,13 +8,14 @@
 (defmethod get-decay-rates ((system ebit-system) &key)
   (let+ (((&slots nuclides decay-maximum-lifetime
 		  velocity-electrons-cm/s electron-rate
-		  electron-beam-energy-in-ev)
+		  electron-beam-energy-in-ev indices)
 	  system)
-	 (rates (get-decay-rates-for-nuclides nuclides decay-maximum-lifetime
-						 velocity-electrons-cm/s electron-rate
-						 electron-beam-energy-in-ev))
-	 (dimension (length (remove-duplicates rates :key #'(lambda (r) (i (destination r)))))))
-    (make-instance 'rate-list
+	 (rates (get-decay-rates-for-nuclides nuclides indices
+					      decay-maximum-lifetime
+					      velocity-electrons-cm/s electron-rate
+					      electron-beam-energy-in-ev))
+	 (dimension (length (remove-duplicates rates :key #'(lambda (r) (ebitode:i (ebitode:destination r)))))))
+    (make-instance 'ebitode:rate-list
 		   :rates rates
 		   :dimension dimension)))
 
@@ -25,6 +26,6 @@
 			    :direction :output
 			    :if-exists if-exists
 			    :element-type '(unsigned-byte 8))
-      (proto:serialize-object-to-stream rate-list 'rate-list :stream stream ))))
+      (proto:serialize-object-to-stream rate-list 'ebitode:rate-list :stream stream ))))
 
 

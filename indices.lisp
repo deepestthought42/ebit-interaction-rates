@@ -3,21 +3,21 @@
 
 
 (defun print-index (index stream)
-  (let+ (((&slots i A Z q) index))
-    (format stream "i:~D,A:~D,Z:~D,q:~D" i A Z q)))
+  (let+ (((&slots ebitode:i ebitode:A ebitode:Z ebitode:q) index))
+    (format stream "i:~D,A:~D,Z:~D,q:~D" ebitode:i ebitode:A ebitode:Z ebitode:q)))
 
 (defun find-index (A Z q all-indices)
   (let ((index (remove-if-not #'(lambda (index)
-				  (and (= (a index) a)
-				       (= (z index) z)
-				       (= (q index) q)))
+				  (and (= (ebitode:a index) a)
+				       (= (ebitode:z index) z)
+				       (= (ebitode:q index) q)))
 			      all-indices)))
     (if (not index)
 	(error "Couldn't find idestination for a: ~D, z: ~D, q: ~D" a z q)
 	(first index))))
 
 
-(defmethod print-object ((o index) stream)
+(defmethod print-object ((o ebitode:index) stream)
   (print-unreadable-object (o stream)
     (print-index o stream)))
 
@@ -40,7 +40,7 @@
     (iter
       (for q from 0 to Z)
       (in outer
-	  (collect (make-instance 'index :i index :a a :z z :q q)))
+	  (collect (make-instance 'ebitode:index :i index :a a :z z :q q)))
       (incf index))))
 
 
