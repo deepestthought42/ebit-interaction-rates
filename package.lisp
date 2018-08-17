@@ -5,6 +5,7 @@
   (:export
    #:get-decay-rates
    #:ebit-system
-   #:indices)
+   #:indices
+   #:initial-populations)
   (:nicknames #:eir))
 

@@ -20,12 +20,12 @@
 
 
 
-(defun %create-rate-for-origin (origin decay all-indices)
+(defun %create-rate-for-origin (origin decay all-indices &key (start-q 1))
   (let+ ((z (nubase:z (nubase:daughter decay)))
 	 (a (nubase:a (nubase:daughter decay)))
-	 (q (min z (max 0 (+ (ebitode:q origin)
-			     (nubase:change-in-q decay)
-			     (- z (ebitode:z origin))))))
+	 (q (min z (max start-q (+ (ebitode:q origin)
+				   (nubase:change-in-q decay)
+				   (- z (ebitode:z origin))))))
 	 (destination (find-index a z q all-indices)))
     (make-instance 'ebitode:rate
 		   :rate-in-hz (nubase:t1/2-to-decay-rates
@@ -47,10 +47,10 @@
 
 
 
-(defun get-rr-rates (indices sigma-to-rate-factor electron-beam-energy-in-ev)
+(defun get-rr-rates (indices sigma-to-rate-factor electron-beam-energy-in-ev &key (start-q 1))
   (iter
     (for index in indices)
-    (if (<= (ebitode:q index) 0)
+    (if (<= (ebitode:q index) start-q)
 	(next-iteration))
     (collect
 	(make-instance 'ebitode:rate

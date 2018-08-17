@@ -31,14 +31,14 @@
 (defparameter *matrix-first-index* 1)
 
 
-(defun get-indices-for-all-nuclides (nuclides)
+(defun get-indices-for-all-nuclides (nuclides &key (start-q 1))
   (iter outer
     (with index = *matrix-first-index*)
     (for nuclide in nuclides)
     (for A = (nubase:a nuclide))
     (for Z = (nubase:z nuclide))
     (iter
-      (for q from 0 to Z)
+      (for q from start-q to Z)
       (in outer
 	  (collect (make-instance 'ebitode:index :i index :a a :z z :q q)))
       (incf index))))
