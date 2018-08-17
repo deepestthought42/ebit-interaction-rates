@@ -67,9 +67,19 @@
 
 
 
+
+(defun create-initial-population-indices (init-descriptors indices)
+  (labels ((init-index (&key a z q value)
+	     (if (not (and a z q))
+		 (error "Need to specify :a, :z, :q, and :value in descriptor."))
+	     (alexandria:if-let (i (find-index a z q indices))
+	       (make-instance 'ebitode:initial-population
+			      :index i :value (coerce value 'double-float)))))
+    (mapcar #'(lambda (d) (apply #'init-index d)) init-descriptors)))
+
 (defmethod initialize-instance :after ((sys ebit-system) &key)
   (let+ (((&slots current-density-in-A/cm^2 beam-radius-in-um
-		  nuclides indices
+		  nuclides indices initial-populations
 		  electron-beam-energy-in-ev beam-current-in-a
 		  velocity-electrons-cm/s electron-rate
 		  accept-trap-depth-in-multiple-of-v-0
@@ -80,6 +90,7 @@
 	 (decays (create-decays-for-system sys)))
     (setf nuclides (nubase:nuclides decays)
 	  indices (get-indices-for-all-nuclides nuclides)
+	  initial-populations (create-initial-population-indices initial-populations indices)
 	  current-density-in-a/cm^2 (/ beam-current-in-a (* pi beam-radius-in-cm beam-radius-in-cm))
 	  velocity-electrons-cm/s (electron-velocity electron-beam-energy-in-ev)
 	  electron-rate (/ current-density-in-a/cm^2 *e-chg-in-C* velocity-electrons-cm/s)
