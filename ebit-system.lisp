@@ -4,17 +4,10 @@
 (defclass ebit-system ()
   ((nuclides :initarg :nuclides :accessor nuclides 
 	     :initform (error "Must initialize nuclides."))
-   (indices :reader indices :initform '())
+   (nuclide-indices :reader nuclide-indices :initform '())
    (initial-populations :accessor initial-populations
 			:initarg :initial-populations :initform '())
    (source-terms :accessor source-terms :initarg :source-terms :initform '())
-   (default-population :accessor default-population :initarg :default-population
-		       :initform 0d0)
-   (initial-temperature-in-ev :accessor initial-temperature-in-ev
-			      :initarg :initial-temperature-in-ev
-			      :initform 10d0)
-   (default-ion-temperature-in-ev :accessor default-ion-temperature-in-ev
-				  :initarg :default-ion-temperature-in-ev :initform 10d0)
    (beam-current-in-a :accessor beam-current-in-a :initarg :beam-current-in-a :initform 0.1d0)
    (beam-radius-in-um :accessor beam-radius-in-um :initarg :beam-radius-in-um
 		      :initform 50d0)
@@ -68,18 +61,26 @@
 
 
 
-(defun create-initial-population-indices (init-descriptors indices)
-  (labels ((init-index (&key a z q value)
+
+(defun create-initial-values (init-descriptors indices)
+  (labels ((init-index (&key a z q no temp-in-ev)
 	     (if (not (and a z q))
 		 (error "Need to specify :a, :z, :q, and :value in descriptor."))
 	     (alexandria:if-let (i (find-index a z q indices))
-	       (make-instance 'ebitode:initial-population
-			      :index i :value (coerce value 'double-float)))))
-    (mapcar #'(lambda (d) (apply #'init-index d)) init-descriptors)))
+	       (make-instance 'ebitodemessages:initial-value 
+			      :index (ebitodemessages:i i)
+			      :number-of-particles (coerce no 'double-float)
+			      :temperature-in-ev (coerce temp-in-ev 'double-float)))))
+    (sort (mapcar #'(lambda (d) (apply #'init-index d)) init-descriptors)
+	  #'< :key #'(lambda (vi) (ebitodemessages:index vi)))))
+
+
+
 
 (defmethod initialize-instance :after ((sys ebit-system) &key)
   (let+ (((&slots current-density-in-A/cm^2 beam-radius-in-um
-		  nuclides indices initial-populations
+		  nuclides nuclide-indices initial-populations
+		  initial-temperature-in-ev
 		  electron-beam-energy-in-ev beam-current-in-a
 		  velocity-electrons-cm/s electron-rate
 		  accept-trap-depth-in-multiple-of-v-0
@@ -89,8 +90,8 @@
 	 (beam-radius-in-cm (* 1d-4 beam-radius-in-um))
 	 (decays (create-decays-for-system sys)))
     (setf nuclides (nubase:nuclides decays)
-	  indices (get-indices-for-all-nuclides nuclides)
-	  initial-populations (create-initial-population-indices initial-populations indices)
+	  nuclide-indices (get-indices-for-all-nuclides nuclides)
+	  initial-populations (create-initial-values initial-populations nuclide-indices)
 	  current-density-in-a/cm^2 (/ beam-current-in-a (* pi beam-radius-in-cm beam-radius-in-cm))
 	  velocity-electrons-cm/s (electron-velocity electron-beam-energy-in-ev)
 	  electron-rate (/ current-density-in-a/cm^2 *e-chg-in-C* velocity-electrons-cm/s)

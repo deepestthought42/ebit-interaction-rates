@@ -5,7 +5,20 @@
   (:export
    #:get-decay-rates
    #:ebit-system
-   #:indices
-   #:initial-populations)
+   #:initial-populations
+   #:current-density-in-A/cm^2
+   #:velocity-electrons-cm/s
+   #:trap-length-in-m
+   #:beam-radius-in-um
+   #:get-mass-numbers
+   #:get-qVe
+   #:get-qVt
+   #:v{r_e}
+   #:trap-depth-in-V
+   #:initial-temperature-in-ev
+   #:nuclide-indices
+   #:spitzer-heating-constant
+   #:exchange-constant
+   #:collision-frequency)
   (:nicknames #:eir))
 

@@ -14,11 +14,12 @@
 		#:cl-protobufs
 		#:group-by)
   :serial t
-  :components ((:protobuf-file "ebit-ode-msg/ebit-ode-messages")
+  :components ((:protobuf-file "../ebit-ode-msg/ebit-ode-messages")
 	       (:file "package")
 	       (:file "constants")
 	       (:file "indices")
 	       (:file "rates")
+	       (:file "heat")
 	       (:file "ebit-system")
                (:file "ebit-interaction-rates")))
 

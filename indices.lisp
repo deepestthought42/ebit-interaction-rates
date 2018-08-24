@@ -2,22 +2,22 @@
 
 
 
-(defun print-index (index stream)
-  (let+ (((&slots ebitode:i ebitode:A ebitode:Z ebitode:q) index))
-    (format stream "i:~D,A:~D,Z:~D,q:~D" ebitode:i ebitode:A ebitode:Z ebitode:q)))
+(defun print-index (nuclide stream)
+  (let+ (((&slots ebitodemessages:i ebitodemessages:A ebitodemessages:Z ebitodemessages:q) nuclide))
+    (format stream "i:~D,A:~D,Z:~D,q:~D" ebitodemessages:i ebitodemessages:A ebitodemessages:Z ebitodemessages:q)))
 
 (defun find-index (A Z q all-indices)
-  (let ((index (remove-if-not #'(lambda (index)
-				  (and (= (ebitode:a index) a)
-				       (= (ebitode:z index) z)
-				       (= (ebitode:q index) q)))
+  (let ((nuclide (remove-if-not #'(lambda (nuclide)
+				  (and (= (ebitodemessages:a nuclide) a)
+				       (= (ebitodemessages:z nuclide) z)
+				       (= (ebitodemessages:q nuclide) q)))
 			      all-indices)))
-    (if (not index)
+    (if (not nuclide)
 	(error "Couldn't find idestination for a: ~D, z: ~D, q: ~D" a z q)
-	(first index))))
+	(first nuclide))))
 
 
-(defmethod print-object ((o ebitode:index) stream)
+(defmethod print-object ((o ebitodemessages:nuclide) stream)
   (print-unreadable-object (o stream)
     (print-index o stream)))
 
@@ -40,7 +40,7 @@
     (iter
       (for q from start-q to Z)
       (in outer
-	  (collect (make-instance 'ebitode:index :i index :a a :z z :q q)))
+	  (collect (make-instance 'ebitodemessages:nuclide :i index :a a :z z :q q)))
       (incf index))))
 
 
