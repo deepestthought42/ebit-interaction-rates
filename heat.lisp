@@ -26,7 +26,7 @@
 	  system))
     (%map-index-array indices
 		      #'(lambda (a z q)
-			  (/ (* 1.569d15 (funcall fn-e-coulomb-log a z q)
+			  (/ (* 1.569d16 (funcall fn-e-coulomb-log a z q)
 				eir:current-density-in-A/cm^2
 				q q)
 			     (* eir:velocity-electrons-cm/s
@@ -46,24 +46,36 @@
 (defun get-qVt (indices Vt)
   (%map-index-array indices #'(lambda (a z q) (declare (ignore z a)) (* q Vt))))
 
-(defun collision-frequency (indices &key (coulomb-log-i/j (constantly 10d0)))
+
+(defun get-q-ve-over-vol-x-kt (indices Ve re-in-m trap-length-in-m)
+  (%map-index-array indices
+		    #'(lambda (a z q)
+			(declare (ignore z a))
+			(/ (* q Ve) (* pi trap-length-in-m
+				       re-in-m re-in-m)))))
+
+
+
+(defun collision-frequency-t-independent-ij (nuclides &key (coulomb-log-i/j (constantly 10d0)))
+  "Given a list of ebitodemessages:nuclides in NUCLIDES, returns a list of items of type
+ebitodemessages:matrix-value holding the temperature independent factor of the "
   (iter outer
-    (for ind-i in-sequence indices)
+    (for i in-sequence nuclides)
     (iter
-      (for ind-j in-sequence indices)
-      (for i = (ebitodemessages:i ind-i))
-      (for j = (ebitodemessages:i ind-j))
-      (for q-i = (ebitodemessages:q ind-i))
-      (for q-j = (ebitodemessages:q ind-j))
-      (for A-i = (ebitodemessages:a ind-i))
-      (for A-j = (ebitodemessages:a ind-j))
-      (in outer
-	  (collect (make-instance 'ebitodemessages:matrix-value
-				  :row i :column j
-				  :value (* 2.4937d-11 (/ (* q-i q-i q-j q-j
-							     (funcall coulomb-log-i/j
-								      q-i q-j A-i A-j))
-							  (* A-i A-j)))))))))
+      (for j in-sequence nuclides)
+      (for val =
+	   (make-instance 'ebitodemessages:matrix-value
+			  :row (ebitodemessages:i i) :column (ebitodemessages:i j)
+			  :value (* 1.35d-13
+				    (/ (* (ebitodemessages:q i) (ebitodemessages:q i)
+					  (ebitodemessages:q j) (ebitodemessages:q j)
+					  (funcall coulomb-log-i/j
+						   (ebitodemessages:q i)
+						   (ebitodemessages:q j)
+						   (ebitodemessages:A i)
+						   (ebitodemessages:A j)))
+				       (* (ebitodemessages:A i) (ebitodemessages:A j))))))
+      (in outer (collect val)))))
 
 
 

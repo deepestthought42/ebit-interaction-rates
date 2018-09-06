@@ -29,6 +29,9 @@
 (defparameter *e-mass-in-ev* 5.11e5 "Electron mass in eV")
 (defparameter *e-chg-in-C* 1.6e-19 "Electron charge")
 (defparameter *ln-lambda-i-j* 10d0)
+(defparameter *kB-in-J/K* 1.381d-23 "Boltzmann constant in J/K")
+(defparameter *nucleon-mass-in-ev* 931.5d6)
 
-
-
+(defparameter *salzborn-A_k* #(1.43d-12 1.08d-12 5.5d-14 3.57d-16))
+(defparameter *salzborn-alpha_k* #(1.17d0 0.71d0 2.1d0 4.2d0))
+(defparameter *salzborn-beta_k* #(-2.76d0 -2.8d0 -2.89d0 -3.03d0))

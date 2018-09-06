@@ -19,6 +19,9 @@
    #:nuclide-indices
    #:spitzer-heating-constant
    #:exchange-constant
-   #:collision-frequency)
+   #:get-q-ve-over-vol-x-kt
+   #:collision-frequency-t-independent-ij
+   #:pressure-in-mbar
+   #:get-cx-rate-over-T-and-N)
   (:nicknames #:eir))
 
