@@ -6,14 +6,16 @@
   (let+ (((&slots ebitodemessages:i ebitodemessages:A ebitodemessages:Z ebitodemessages:q) nuclide))
     (format stream "i:~D,A:~D,Z:~D,q:~D" ebitodemessages:i ebitodemessages:A ebitodemessages:Z ebitodemessages:q)))
 
-(defun find-index (A Z q all-indices)
+(defun find-index (A Z q all-indices &key (errorp t) (on-error nil))
   (let ((nuclide (remove-if-not #'(lambda (nuclide)
 				  (and (= (ebitodemessages:a nuclide) a)
 				       (= (ebitodemessages:z nuclide) z)
 				       (= (ebitodemessages:q nuclide) q)))
 			      all-indices)))
     (if (not nuclide)
-	(error "Couldn't find idestination for a: ~D, z: ~D, q: ~D" a z q)
+	(if errorp
+	    (error "Couldn't find idestination for a: ~D, z: ~D, q: ~D" a z q)
+	    on-error)
 	(first nuclide))))
 
 

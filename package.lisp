@@ -22,6 +22,8 @@
    #:get-q-ve-over-vol-x-kt
    #:collision-frequency-t-independent-ij
    #:pressure-in-mbar
-   #:get-cx-rate-over-T-and-N)
+   #:get-cx-rate-over-T-and-N
+   #:source-terms
+   #:get-source-rates)
   (:nicknames #:eir))
 

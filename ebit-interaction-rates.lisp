@@ -8,12 +8,14 @@
 (defmethod get-decay-rates ((system ebit-system) &key)
   (let+ (((&slots nuclides decay-maximum-lifetime
 		  velocity-electrons-cm/s electron-rate
-		  electron-beam-energy-in-ev nuclide-indices)
+		  electron-beam-energy-in-ev nuclide-indices
+		  source-terms)
 	  system)
 	 (rates (get-decay-rates-for-nuclides nuclides nuclide-indices
 					      decay-maximum-lifetime
 					      velocity-electrons-cm/s electron-rate
-					      electron-beam-energy-in-ev))
+					      electron-beam-energy-in-ev
+					      source-terms))
 	 (dimension (length (remove-duplicates rates :key #'(lambda (r) (ebitodemessages:row r))))))
     (values rates dimension)))
 

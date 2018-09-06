@@ -35,32 +35,34 @@
 			     :row destination-i
 			     :value value))))))
 
-
+(defmacro iter-indices ((indices index-symbol) &body body)
+  `(%create-rates ,indices
+		  #'(lambda (,index-symbol)
+		      ,@body)))
 
 
 (defun get-nuclear-decay-rates (indices decays &key (start-q 1))
-  (%create-rates indices
-		 #'(lambda (index)
-		     (let+ ((decays-from-index (remove-if-not
-						#'(lambda (d)
-						    (and (= (ebitodemessages:a index) (nubase:a d))
-							 (= (ebitodemessages:z index) (nubase:z d))))
-						decays :key #'nubase:mother))
-			    (origin-i (ebitodemessages:i index)))
-		       
-		       (iter
-			 (for decay-from-index in decays-from-index)
-			 (let+ ((z (nubase:z (nubase:daughter decay-from-index)))
-				(a (nubase:a (nubase:daughter decay-from-index)))
-				(q (min z (max start-q (+ (ebitodemessages:q index)
-							  (nubase:change-in-q decay-from-index)
-							  (- z (ebitodemessages:z index))))))
-				(destination-i (ebitodemessages:i (find-index a z q indices)))
-				(rate (nubase:t1/2-to-decay-rates (nubase:half-life decay-from-index))))
-			   (appending
-			    (list
-			     (cons origin-i (- rate))
-			     (cons destination-i rate)))))))))
+  (iter-indices (indices index)
+    (let+ ((decays-from-index (remove-if-not
+			       #'(lambda (d)
+				   (and (= (ebitodemessages:a index) (nubase:a d))
+					(= (ebitodemessages:z index) (nubase:z d))))
+			       decays :key #'nubase:mother))
+	   (origin-i (ebitodemessages:i index)))
+      
+      (iter
+	(for decay-from-index in decays-from-index)
+	(let+ ((z (nubase:z (nubase:daughter decay-from-index)))
+	       (a (nubase:a (nubase:daughter decay-from-index)))
+	       (q (min z (max start-q (+ (ebitodemessages:q index)
+					 (nubase:change-in-q decay-from-index)
+					 (- z (ebitodemessages:z index))))))
+	       (destination-i (ebitodemessages:i (find-index a z q indices)))
+	       (rate (nubase:t1/2-to-decay-rates (nubase:half-life decay-from-index))))
+	  (appending
+	   (list
+	    (cons origin-i (- rate))
+	    (cons destination-i rate))))))))
 
 
 (defun get-rr-rates (indices sigma-to-rate-factor electron-beam-energy-in-ev &key (start-q 1))
@@ -68,24 +70,23 @@
 	     (* sigma-to-rate-factor
 		(cross:rr-cross-section electron-beam-energy-in-ev
 					(ebitodemessages:q index) (ebitodemessages:Z index)))))
-    (%create-rates indices
-		   #'(lambda (index)
-		       (cond
-			 ((<= (ebitodemessages:q index) 0d0) nil)
-			 ((= (ebitodemessages:q index) start-q)
-			  (list
-			   (cons (ebitodemessages:i index)
-				 (- (calc index)))))
-			 (t
-			  (list
-			   (cons (ebitodemessages:i index)
-				 (- (calc index)))
-			   (cons (ebitodemessages:i
-				  (find-index (ebitodemessages:a index)
-					  (ebitodemessages:z index)
-					  (1- (ebitodemessages:q index))
-					  indices))
-				 (calc index)))))))))
+    (iter-indices (indices index)
+      (cond
+	((<= (ebitodemessages:q index) 0d0) nil)
+	((= (ebitodemessages:q index) start-q)
+	 (list
+	  (cons (ebitodemessages:i index)
+		(- (calc index)))))
+	(t
+	 (list
+	  (cons (ebitodemessages:i index)
+		(- (calc index)))
+	  (cons (ebitodemessages:i
+		 (find-index (ebitodemessages:a index)
+			     (ebitodemessages:z index)
+			     (1- (ebitodemessages:q index))
+			     indices))
+		(calc index))))))))
 
 (defun get-ei-rates (indices sigma-to-rate-factor electron-beam-energy-in-ev &key (start-q 1))
   (labels ((calc (index)
@@ -93,22 +94,38 @@
 		(cross:ionization-cross-section electron-beam-energy-in-ev
 						(ebitodemessages:Z index)
 						(ebitodemessages:q index)))))
-    (%create-rates indices
-		   #'(lambda (index)
-		       (cond
-			 ((>= (ebitodemessages:q index) (ebitodemessages:z index)) nil)
-			 ((<= (ebitodemessages:q index) (1- start-q))
-			  (list
-			   (cons (ebitodemessages:i index) (- (calc index)))))
-			 (t
-			  (list
-			   (cons (ebitodemessages:i index) (- (calc index)))
-			   (cons (ebitodemessages:i
-				  (find-index (ebitodemessages:a index)
-					      (ebitodemessages:z index)
-					      (1+ (ebitodemessages:q index))
-					      indices))
-				 (calc index)))))))))
+    (iter-indices (indices index)
+      (cond
+	((>= (ebitodemessages:q index) (ebitodemessages:z index)) nil)
+	((<= (ebitodemessages:q index) (1- start-q))
+	 (list
+	  (cons (ebitodemessages:i index) (- (calc index)))))
+	(t
+	 (list
+	  (cons (ebitodemessages:i index) (- (calc index)))
+	  (cons (ebitodemessages:i
+		 (find-index (ebitodemessages:a index)
+			     (ebitodemessages:z index)
+			     (1+ (ebitodemessages:q index))
+			     indices))
+		(calc index))))))))
+
+
+(defun get-source-rates (indices source-terms)
+  (iter
+    (with retval = (make-array (length indices) :element-type 'double-float))
+    (for index in-sequence indices with-index i)
+    (iter
+      (for st in source-terms)
+      (let+ (((&key a q z rate) st)
+	     ((&slots ebitodemessages:q ebitodemessages:a ebitodemessages:z)
+	      index))
+	(if (and (= a ebitodemessages:a)
+		 (= q ebitodemessages:q)
+		 (= z ebitodemessages:z))
+	    (setf (aref retval i) rate)
+	    (setf (aref retval i) 0d0))))
+    (finally (return retval))))
 
 
 (defun get-decay-rates-for-nuclides (nuclides indices maximum-lifetime
@@ -153,13 +170,6 @@ sigma_i,i-k = A_k*q^{alpha*k}*I[eV]^{beta_k} cm2 [Müller, Salzborn 1977]"
 	 (beta_k (aref *salzborn-beta_k* (1- k))))
     (* A_k (expt q alpha_k) (expt I beta_k))))
 
-
-#+nil
-(defun dcharge-exchange-factor ()
-  (let 
-    (%map-index-array indices #'(lambda (a z q)
-				  (declare (ignore z))
-				  ))))
 
 
 (defun get-cx-rate-over-T-and-N (indices I pressure-in-mbar
