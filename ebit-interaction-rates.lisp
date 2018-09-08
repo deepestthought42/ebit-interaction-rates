@@ -14,8 +14,7 @@
 	 (rates (get-decay-rates-for-nuclides nuclides nuclide-indices
 					      decay-maximum-lifetime
 					      velocity-electrons-cm/s electron-rate
-					      electron-beam-energy-in-ev
-					      source-terms))
+					      electron-beam-energy-in-ev))
 	 (dimension (length (remove-duplicates rates :key #'(lambda (r) (ebitodemessages:row r))))))
     (values rates dimension)))
 
