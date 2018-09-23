@@ -20,6 +20,7 @@
 	       (:file "indices")
 	       (:file "rates")
 	       (:file "heat")
-	       (:file "ebit-system")
+	       (:file "ebit-parameters")
+	       (:file "decays")
                (:file "ebit-interaction-rates")))
 

@@ -4,7 +4,7 @@
   (:use #:cl #:iterate #:let-plus)
   (:export
    #:get-decay-rates
-   #:ebit-system
+   #:ebit-parameters
    #:initial-populations
    #:current-density-in-A/cm^2
    #:velocity-electrons-cm/s
@@ -24,6 +24,12 @@
    #:pressure-in-mbar
    #:get-cx-rate-over-T-and-N
    #:source-terms
-   #:get-source-rates)
+   #:electron-beam-energy-in-ev
+   #:electron-rate
+   #:get-dNs
+   #:create-decays-for-nuclides
+   #:initial-descriptor
+   #:get-indices-for-all-nuclides
+   #:find-index)
   (:nicknames #:eir))
 

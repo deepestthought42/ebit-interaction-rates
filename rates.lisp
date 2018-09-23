@@ -10,15 +10,6 @@
 	    (ebitodemessages:value o))))
 
 
-(defun create-decays-for-nuclides (nuclides maximum-lifetime)
-  (let+ ((decays (make-instance 'nubase:decays)))
-    (iter
-      (for n in nuclides)
-      (nubase:create-decay-chains n :accumulator decays
-				    :max-half-life maximum-lifetime))
-    decays))
-
-
 
 (defun %create-rates (indices value-and-destination)
   (iter outer
@@ -111,36 +102,19 @@
 		(calc index))))))))
 
 
-(defun get-source-rates (indices source-terms)
-  (iter
-    (with retval = (make-array (length indices) :element-type 'double-float))
-    (for index in-sequence indices with-index i)
-    (iter
-      (for st in source-terms)
-      (let+ (((&key a q z rate) st)
-	     ((&slots ebitodemessages:q ebitodemessages:a ebitodemessages:z)
-	      index))
-	(if (and (= a ebitodemessages:a)
-		 (= q ebitodemessages:q)
-		 (= z ebitodemessages:z))
-	    (setf (aref retval i) rate)
-	    (setf (aref retval i) 0d0))))
-    (finally (return retval))))
 
 
-(defun get-decay-rates-for-nuclides (nuclides indices maximum-lifetime
-				     velocity-electrons-cm/s electron-rate
-				     electron-beam-energy-in-ev)
+(defun get-dNs (indices decays velocity-electrons-cm/s
+		electron-rate electron-beam-energy-in-ev)
   (let+ ((sigma-to-rate-factor (* velocity-electrons-cm/s electron-rate))
-	 ((&slots nubase:decays) (create-decays-for-nuclides nuclides maximum-lifetime))
-	 (nuclear-decay-rates (get-nuclear-decay-rates indices nubase:decays) )
+	 (nuclear-decay-rates (get-nuclear-decay-rates indices decays) )
 	 (rr-rates (get-rr-rates indices sigma-to-rate-factor electron-beam-energy-in-ev))
 	 (ei-rates (get-ei-rates indices sigma-to-rate-factor electron-beam-energy-in-ev)))
     (append nuclear-decay-rates rr-rates ei-rates)))
 
 
 
-
+;;; charge exchange rates
 
 
 (defun avg-velocity-over-sqrt-of-kB-T (A)
