@@ -9,7 +9,7 @@
 			       :initarg :electron-beam-energy-in-ev
 			       :initform 5000d0)
    (pressure-in-mbar :accessor pressure-in-mbar :initarg :pressure-in-mbar :initform 1d-10)
-   (current-density-in-A/cm^2 :accessor current-density-in-A/cm^2 :initform 1d0)
+   (current-density-in-A/cm^2 :accessor current-density-in-A/cm^2 :initform nil :initarg :current-density-in-A/cm^2)
    (velocity-electrons-cm/s :accessor velocity-electrons-cm/s :initform 1d0)
    (trap-depth-in-V :accessor trap-depth-in-V :initarg :trap-depth-in-V :initform 25d0)
    (electron-rate :accessor electron-rate :initform 1d0)
@@ -62,7 +62,10 @@ on the overlap. Adjust ACCEPT-TRAP-DEPTH-IN-MULTIPLE-OF-V-0: ~,2f if necessary."
 		  accessories v-0 v{r_e})
 	  sys)
 	 (beam-radius-in-cm (* 1d-4 beam-radius-in-um)))
-    (setf current-density-in-a/cm^2 (/ beam-current-in-a (* pi beam-radius-in-cm beam-radius-in-cm))
+    (setf current-density-in-a/cm^2
+	  (if current-density-in-a/cm^2
+	      current-density-in-a/cm^2
+	      (/ beam-current-in-a (* pi beam-radius-in-cm beam-radius-in-cm)))
 	  velocity-electrons-cm/s (electron-velocity electron-beam-energy-in-ev)
 	  electron-rate (/ current-density-in-a/cm^2 *e-chg-in-C* velocity-electrons-cm/s)
 	  v-0 (calc-v-0 beam-current-in-a electron-beam-energy-in-ev)
