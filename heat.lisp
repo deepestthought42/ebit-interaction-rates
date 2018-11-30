@@ -5,7 +5,7 @@
 (defun %map-index-array (indices fun-of-a/z/q
 			 &key (ret (make-array (length indices)
 					       :element-type 'double-float))
-			      (start-index 1))
+			      (start-index *start-index*))
   (let+ ((dim (length indices)))
     (iter
       (for index in-sequence indices)

@@ -1,5 +1,7 @@
 (in-package #:ebit-interaction-rates)
 
+(defparameter *start-index* 1)
+
 (defun determine-limits (&optional (nubase-file nubase:*nubase2016*)
 				   ;; an ion with Z protons can have
 				   ;; Z+1 charge states
