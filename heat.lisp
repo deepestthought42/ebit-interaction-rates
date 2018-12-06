@@ -26,12 +26,8 @@
 	  system))
     (%map-index-array indices
 		      #'(lambda (a z q)
-			  (/ (* 1.569d15 (funcall fn-e-coulomb-log a z q)
-				eir:current-density-in-A/cm^2
-				q q)
-			     (* eir:velocity-electrons-cm/s
-				eir:velocity-electrons-cm/s
-				a))))))
+			  (/ (* 1.4616d18 (funcall fn-e-coulomb-log a z q) eir:current-density-in-A/cm^2 q q)
+			     (* eir:velocity-electrons-cm/s eir:velocity-electrons-cm/s a))))))
 
 
 
