@@ -17,13 +17,14 @@
    (v-0 :accessor v-0 :initarg :v-0 :initform 0d0)
    (v{r_e} :accessor v{r_e} :initarg :v{r_e} :initform 0d0)
    (accept-trap-depth-in-multiple-of-v-0 :accessor accept-trap-depth-in-multiple-of-v-0
-					 :initarg :accept-trap-depth-in-multiple-of-v-0 :initform 5d0)))
+					 :initarg :accept-trap-depth-in-multiple-of-v-0 :initform 10d0)))
 
 
 (defun electron-velocity (kinetic-energy-in-ev)
   (let ((v/c (sqrt (- 1 (/ 1 (expt (+ 1 (/ kinetic-energy-in-ev *e-mass-in-ev*)) 2)))))
 	(classical-v/c (* (sqrt (/ (* 2 kinetic-energy-in-ev) *e-mass-in-ev*)))))
     (values (* *c-in-cm/s* v/c) v/c classical-v/c)))
+
 
 
 (defun calc-v-0 (I-in-a e-beam-energy-in-ev)
