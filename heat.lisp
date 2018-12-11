@@ -62,7 +62,7 @@ ebitodemessages:matrix-value holding the temperature independent factor of the "
       (for val =
 	   (make-instance 'ebitodemessages:matrix-value
 			  :row (ebitodemessages:i i) :column (ebitodemessages:i j)
-			  :value (* 1.49d-12
+			  :value (* 1.49d-13
 				    (/ (* (ebitodemessages:q i) (ebitodemessages:q i)
 					  (ebitodemessages:q j) (ebitodemessages:q j)
 					  (funcall coulomb-log-i/j
