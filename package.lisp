@@ -30,6 +30,8 @@
    #:create-decays-for-nuclides
    #:initial-descriptor
    #:get-indices-for-all-nuclides
-   #:find-index)
+   #:find-index
+   #:get-q
+   #:r-trap-in-m)
   (:nicknames #:eir))
 

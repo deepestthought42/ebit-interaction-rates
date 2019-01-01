@@ -42,6 +42,8 @@
 (defun get-qVt (indices Vt)
   (%map-index-array indices #'(lambda (a z q) (declare (ignore z a)) (* q Vt))))
 
+(defun get-q (indices)
+  (%map-index-array indices #'(lambda (a z q) (declare (ignore z a)) (coerce q 'double-float))))
 
 (defun get-q-ve-over-vol-x-kt (indices Ve re-in-m trap-length-in-m)
   (%map-index-array indices

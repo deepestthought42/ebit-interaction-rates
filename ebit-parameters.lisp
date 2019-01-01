@@ -14,6 +14,7 @@
    (trap-depth-in-V :accessor trap-depth-in-V :initarg :trap-depth-in-V :initform 25d0)
    (electron-rate :accessor electron-rate :initform 1d0)
    (trap-length-in-m :accessor trap-length-in-m :initarg :trap-length-in-m :initform 0.08d0)
+   (r-trap-in-m :accessor r-trap-in-m :initarg :r-trap-in-m :initform 7d-3)
    (v-0 :accessor v-0 :initarg :v-0 :initform 0d0)
    (v{r_e} :accessor v{r_e} :initarg :v{r_e} :initform 0d0)
    (accept-trap-depth-in-multiple-of-v-0 :accessor accept-trap-depth-in-multiple-of-v-0
