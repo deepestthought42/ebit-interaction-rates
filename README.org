@@ -1,0 +1,5 @@
+* EBIT Interaction Rates
+This is a lisp package to calculate ion-ion interactions (decay, heat exchange, etc.) in
+an Electron Beam Ion Trap.
+
+(c) Renee Klawitter, 2018-2019
